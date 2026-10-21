@@ -1,0 +1,1 @@
+# Aplica-ie-pentru-asistarea-i-analiza-prezent-rilor-orale
