@@ -8,16 +8,22 @@ import sqlite3
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from urllib.parse import parse_qs
 
 import uvicorn
+from google.auth.transport import requests as google_requests
+from google.oauth2 import id_token as google_id_token
 from fastapi import FastAPI, HTTPException, Request, Response
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from pydantic import BaseModel, Field
 
 BASE = Path(__file__).parent
 DB_PATH = BASE / "speakcoach.db"
 COOKIE = "sc_session"
 SESSION_DAYS = 30
+# Client ID de la Google (vezi instrucțiunile). Poate fi pus și ca variabilă de mediu GOOGLE_CLIENT_ID.
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "547862249138-4lmlsbul3tnpvd6ro7kv3vb1l8vq66qb.apps.googleusercontent.com")
+GOOGLE_ENABLED = GOOGLE_CLIENT_ID.endswith(".apps.googleusercontent.com") and not GOOGLE_CLIENT_ID.startswith("PUNE_AICI")
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 app = FastAPI()
@@ -54,6 +60,11 @@ def init_db():
             );
             """
         )
+        # coloană nouă pentru conturile Google (și pentru bazele de date create înainte)
+        cols = [r["name"] for r in c.execute("PRAGMA table_info(users)")]
+        if "google_sub" not in cols:
+            c.execute("ALTER TABLE users ADD COLUMN google_sub TEXT")
+        c.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_google ON users(google_sub)")
 
 
 init_db()
@@ -152,11 +163,80 @@ def login(data: LoginIn, response: Response):
     email = data.email.strip().lower()
     with conn() as c:
         row = c.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
+    if row and "$" not in row["password_hash"]:
+        raise HTTPException(401, "Acest cont folosește Google. Apasă pe butonul „Continuă cu Google”.")
     ok = verify_password(data.password, row["password_hash"] if row else DUMMY_HASH)
     if not row or not ok:
         raise HTTPException(401, "Email sau parolă greșite.")
     start_session(response, row["id"])
     return {"user": public(row)}
+
+
+class GoogleIn(BaseModel):
+    credential: str = Field(max_length=4096)
+
+
+@app.get("/api/config")
+def config():
+    return {"google_client_id": GOOGLE_CLIENT_ID if GOOGLE_ENABLED else None}
+
+
+def google_user(credential: str):
+    """Verifică tokenul Google și întoarce utilizatorul din baza de date (îl creează dacă lipsește)."""
+    if not GOOGLE_ENABLED:
+        raise HTTPException(503, "Conectarea cu Google nu este configurată pe server.")
+    try:
+        info = google_id_token.verify_oauth2_token(
+            credential, google_requests.Request(), GOOGLE_CLIENT_ID, clock_skew_in_seconds=10
+        )
+    except ValueError:
+        raise HTTPException(401, "Nu am putut verifica contul Google. Încearcă din nou.")
+    except Exception:
+        raise HTTPException(503, "Serverul nu a putut contacta Google. Verifică conexiunea la internet.")
+    if not info.get("email_verified"):
+        raise HTTPException(401, "Adresa de email Google nu este verificată.")
+    sub = info["sub"]
+    email = info["email"].strip().lower()
+    name = (info.get("name") or email.split("@")[0]).strip()[:80]
+    now = datetime.now(timezone.utc).isoformat()
+    with conn() as c:
+        row = c.execute("SELECT * FROM users WHERE google_sub = ?", (sub,)).fetchone()
+        if not row:
+            row = c.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
+            if row:  # există deja un cont cu acest email: îl legăm de Google
+                c.execute("UPDATE users SET google_sub = ? WHERE id = ?", (sub, row["id"]))
+            else:  # cont nou; parola "!" nu poate fi potrivită cu nicio parolă
+                cur = c.execute(
+                    "INSERT INTO users (name, email, password_hash, created_at, google_sub) VALUES (?, ?, ?, ?, ?)",
+                    (name, email, "!", now, sub),
+                )
+                row = c.execute("SELECT * FROM users WHERE id = ?", (cur.lastrowid,)).fetchone()
+    return row
+
+
+@app.post("/api/google")
+def google_login(data: GoogleIn, response: Response):
+    row = google_user(data.credential)
+    start_session(response, row["id"])
+    return {"user": public(row)}
+
+
+@app.post("/api/google-redirect")
+async def google_redirect(request: Request):
+    """Google trimite aici utilizatorul după autentificare (fără fereastră pop-up)."""
+    form = parse_qs((await request.body()).decode("utf-8", "ignore"))
+    credential = form.get("credential", [""])[0]
+    csrf_body = form.get("g_csrf_token", [""])[0]
+    csrf_cookie = request.cookies.get("g_csrf_token", "")
+    if not csrf_cookie or not hmac.compare_digest(csrf_cookie, csrf_body):
+        return RedirectResponse("/?google=eroare", status_code=303)
+    try:
+        row = google_user(credential)
+    except HTTPException:
+        return RedirectResponse("/?google=eroare", status_code=303)
+    response = RedirectResponse("/", status_code=303)
+    start_session(response, row["id"])
+    return response
 
 
 @app.post("/api/logout")

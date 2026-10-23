@@ -35,6 +35,13 @@ nav a.link:hover{color:#fff}
 .bar .btn{min-height:56px;padding:12px 32px;font-size:16px}
 .btn-ghost{background:var(--glass);border:1px solid var(--glass-line);backdrop-filter:blur(12px)}
 
+/* utilizator conectat */
+.user{display:none;align-items:center;gap:14px}
+.in .user{display:flex}
+.in #open-login,.in [data-open-login],.in .band{display:none}
+.avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--blue));display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:18px;text-transform:uppercase}
+.user-name{font-weight:600;font-size:16px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
 /* hero */
 .hero{padding:72px 0 24px;text-align:center;display:flex;flex-direction:column;align-items:center}
 .pill{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:8px 16px;border-radius:999px;background:var(--glass);border:1px solid var(--glass-line);color:#E6DEFF;margin-bottom:24px}
@@ -122,6 +129,8 @@ label.f{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:60
 .opts a{color:#C9B8FF;font-weight:600;text-decoration:none}
 .opts a:hover{text-decoration:underline}
 .msg{font-size:14px;background:rgba(111,227,255,.12);border:1px solid rgba(111,227,255,.35);border-radius:14px;padding:10px 14px;color:#D9F6FF}
+.msg.err{background:rgba(255,107,129,.14);border-color:rgba(255,107,129,.55);color:#FFD6DD}
+.auth-form .btn:disabled{opacity:.6;cursor:wait}
 .auth-form .btn{width:100%;min-height:54px;font-size:16px}
 .switch{text-align:center;font-size:14px;color:var(--muted)}
 .switch button{background:none;border:none;color:#C9B8FF;font-weight:700;cursor:pointer;font-size:14px;text-decoration:underline;padding:4px}
@@ -134,6 +143,8 @@ label.f{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:60
   .card,.card.wide,.card.full{grid-column:auto}
   .steps{grid-template-columns:1fr;gap:24px}
   nav a.link{display:none}
+  .user-name{display:none}
+  nav{gap:12px}
   .bar{min-height:72px;padding:10px 12px 10px 20px}
   .logo{font-size:20px;gap:8px}
   .logo span{width:30px;height:30px}
@@ -148,19 +159,18 @@ label.f{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:60
   html{scroll-behavior:auto}.btn,.card{transition:none}
 }
 
+/* fereastra nu depășește ecranul; formularul derulează */
+dialog{max-height:calc(100dvh - 24px)}
+.auth{max-height:calc(100dvh - 24px);min-height:0;grid-template-rows:minmax(0,1fr)}
+.auth-form{overflow-y:auto;justify-content:flex-start}
+.auth-form h3{margin-top:auto}
+.auth-form .switch{margin-bottom:auto}
 
-/* utilizator conectat */
-.user{display:none;align-items:center;gap:14px}
-.in .user{display:flex}
-.in #open-login,.in [data-open-login],.in .band{display:none}
-.avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--blue));display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:18px;text-transform:uppercase}
-.user-name{font-weight:600;font-size:16px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.msg.err{background:rgba(255,107,129,.14);border-color:rgba(255,107,129,.55);color:#FFD6DD}
-.auth-form .btn:disabled{opacity:.6;cursor:wait}
-@media (max-width:860px){
-  .user-name{display:none}
-  nav{gap:12px}
-}
+/* conectare cu Google */
+.google{display:flex;flex-direction:column;gap:14px}
+#google-btn{display:flex;justify-content:center;min-height:44px}
+.or{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:13px}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--glass-line)}
 
 /* dimensiuni mai mici pe ecran de laptop */
 @media (min-width:861px){
@@ -198,3 +208,7 @@ label.f{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:60
   .field input{min-height:48px}
   .auth-form .btn{min-height:50px}
 }
+
+
+/* bara de derulare din formular, în stilul paginii */
+.auth-form{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.3) transparent}

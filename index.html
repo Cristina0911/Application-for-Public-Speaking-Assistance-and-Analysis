@@ -111,6 +111,11 @@
 <button type="button" id="tab-up" aria-pressed="false">Cont nou</button>
 </div>
 
+<div class="google" id="google-box" hidden>
+<div id="google-btn"></div>
+<div class="or"><span>sau cu email</span></div>
+</div>
+
 <label class="f" id="name-row" hidden>Nume
 <span class="field"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><input type="text" name="nume" placeholder="Numele tău" autocomplete="name"></span>
 </label>
@@ -130,7 +135,7 @@
 </div>
 <label class="check" id="terms-row" hidden><input type="checkbox" id="terms"> Sunt de acord cu folosirea înregistrărilor mele pentru analiză.</label>
 
-<div class="msg" id="msg" hidden></div>
+<div class="msg" id="msg" hidden>Autentificarea reală se conectează într-un pas următor.</div>
 <button class="btn btn-main" type="submit" id="submit">Autentifică-te</button>
 <div class="switch" id="switch">Nu ai cont? <button type="button" id="to-up">Creează unul</button></div>
 </form>
@@ -176,7 +181,7 @@ function mode(signup) {
     : 'Nu ai cont? <button type="button" id="to-up">Creează unul</button>';
   $('msg').hidden = true;
 }
-function open(signup) { mode(signup); dlg.showModal(); }
+function open(signup) { mode(signup); dlg.showModal(); renderGoogle(); }
 
 $('open-login').addEventListener('click', () => open(false));
 document.querySelectorAll('[data-open-login]').forEach((b) => b.addEventListener('click', () => open(b.textContent.includes('cont'))));
@@ -269,6 +274,49 @@ $('logout').addEventListener('click', async () => {
   try { await api('/api/logout', 'POST', {}); } catch (e) {}
   setUser(null);
 });
+
+// ---- Google ----
+let googleReady = false;
+function renderGoogle() {
+  if (!googleReady) return;
+  const box = $('google-btn');
+  box.innerHTML = '';
+  const w = Math.max(200, Math.min(400, Math.floor($('google-box').clientWidth)));
+  google.accounts.id.renderButton(box, { theme: 'outline', size: 'large', shape: 'pill', text: 'continue_with', logo_alignment: 'left', locale: 'ro', width: w });
+}
+async function onGoogle(resp) {
+  showMsg('', false);
+  try {
+    const data = await api('/api/google', 'POST', { credential: resp.credential });
+    setUser(data.user);
+    dlg.close();
+  } catch (err) {
+    showMsg(err.message, true);
+  }
+}
+async function initGoogle() {
+  try {
+    const cfg = await api('/api/config', 'GET');
+    if (!cfg.google_client_id) return;
+    await new Promise((ok, fail) => {
+      const s = document.createElement('script');
+      s.src = 'https://accounts.google.com/gsi/client';
+      s.async = true; s.onload = ok; s.onerror = fail;
+      document.head.appendChild(s);
+    });
+    google.accounts.id.initialize({ client_id: cfg.google_client_id, ux_mode: 'redirect', login_uri: location.origin + '/api/google-redirect' });
+    googleReady = true;
+    $('google-box').hidden = false;
+  } catch (e) { /* fără Google: rămâne doar formularul cu email */ }
+}
+initGoogle();
+
+// dacă Google te-a adus înapoi cu o eroare
+if (location.search.includes('google=eroare')) {
+  history.replaceState(null, '', '/');
+  open(false);
+  showMsg('Conectarea cu Google nu a reușit. Încearcă din nou.', true);
+}
 
 // la încărcarea paginii: dacă există o sesiune, te recunoaște
 api('/api/me', 'GET').then((d) => setUser(d.user)).catch(() => {});
