@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SpeakCoach</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+<div class="wrap">
+<div class="bar">
+<a class="logo" href="#"><span></span>SpeakCoach</a>
+<nav>
+<a class="link" href="#functii">Funcții</a>
+<a class="link" href="#cum">Cum funcționează</a>
+<button class="btn btn-main" id="open-login" type="button">Autentificare</button>
+<div class="user" id="user-box">
+<span class="avatar" id="avatar" aria-hidden="true"></span>
+<span class="user-name" id="user-name"></span>
+<button class="btn btn-ghost" id="logout" type="button">Deconectare</button>
+</div>
+</nav>
+</div>
+</div>
+</header>
+
+<main>
+<div class="wrap">
+<div class="hero">
+<div class="pill">Asistent pentru prezentări orale</div>
+<h1>Prezintă mai sigur, cu <span class="grad">feedback</span> pe înregistrarea ta</h1>
+<p>Încarci slide-urile și înregistrarea în care ai prezentat. Aplicația îți arată cum ai vorbit și ce poți îmbunătăți, în română sau engleză.</p>
+<div class="cta">
+<button class="btn btn-main" type="button" data-open-login>Începe acum</button>
+<a class="btn btn-ghost" href="#cum">Vezi cum funcționează</a>
+</div>
+<div class="wave" id="wave" aria-hidden="true"></div>
+</div>
+</div>
+
+<section id="functii">
+<div class="wrap">
+<div class="head">
+<div class="eyebrow">Funcții</div>
+<h2>Tot ce analizează aplicația</h2>
+<p>Toate pornesc de la o singură înregistrare a prezentării tale.</p>
+</div>
+<div class="bento">
+<div class="card wide"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h14"/></svg></div><h3>Transcriere automată</h3><p>Transformă ce ai spus în text, cu timpii exacți, în română și engleză. De aici pornește toată analiza.</p></div>
+<div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><h3>Ritm și pauze</h3><p>Câte cuvinte spui pe minut și unde ai făcut pauze prea lungi.</p></div>
+<div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M9 12h.01M12 12h.01M15 12h.01"/></svg></div><h3>Cuvinte de umplutură</h3><p>Găsește „ăă”, „deci”, „practic” sau „um” și unde apar cel mai des.</p></div>
+<div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4.5 4.5 0 0 0 7 0M9 9.5h.01M15 9.5h.01"/></svg></div><h3>Față și gesturi</h3><p>Privirea, expresia și mișcările mâinilor, din video.</p></div>
+<div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/></svg></div><h3>Comparație cu slide-urile</h3><p>Verifică dacă ai acoperit ideile din prezentarea ta.</p></div>
+<div class="card full"><div class="txt"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div><h3>Raport cu sfaturi</h3><p>La final primești un scor și recomandări clare, segment cu segment, ca să știi exact ce să exersezi.</p></div></div>
+</div>
+</div>
+</section>
+
+<section id="cum">
+<div class="wrap">
+<div class="head">
+<div class="eyebrow">Cum funcționează</div>
+<h2>Trei pași, fără setări complicate</h2>
+</div>
+<div class="steps">
+<div class="step"><div class="n">01</div><h3>Încarci prezentarea</h3><p>Alegi fișierul cu slide-urile de pe calculator.</p></div>
+<div class="step"><div class="n">02</div><h3>Încarci înregistrarea</h3><p>Video sau audio, cu prezentarea ta de la început la sfârșit.</p></div>
+<div class="step"><div class="n">03</div><h3>Primești feedback</h3><p>Aplicația analizează și îți arată raportul cu ce poți îmbunătăți.</p></div>
+</div>
+</div>
+</section>
+
+<div class="wrap">
+<div class="band">
+<h2>Gata să încerci?</h2>
+<p>Creează un cont și încarcă prima ta prezentare.</p>
+<button class="btn btn-main" type="button" data-open-login>Creează cont</button>
+</div>
+</div>
+</main>
+
+<footer>
+<div class="wrap">SpeakCoach · aplicație pentru asistarea și analiza prezentărilor orale</div>
+</footer>
+
+<dialog id="login" aria-labelledby="form-title">
+<div class="auth">
+<aside class="auth-side">
+<div class="logo"><span></span>SpeakCoach</div>
+<div>
+<h2 id="side-title">Bine ai revenit</h2>
+<p id="side-text">Continuă de unde ai rămas și vezi feedbackul la prezentările tale.</p>
+</div>
+<ul class="perks">
+<li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Transcriere în română și engleză</li>
+<li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Ritm, pauze și cuvinte de umplutură</li>
+<li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Raport cu sfaturi pe fiecare segment</li>
+</ul>
+<div class="mini-wave" id="mini-wave" aria-hidden="true"></div>
+</aside>
+
+<form class="auth-form" id="login-form">
+<button class="x" type="button" id="close" aria-label="Închide"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+<h3 id="form-title">Autentificare</h3>
+<p class="sub" id="form-sub">Introdu datele contului tău.</p>
+<div class="tabs" role="group" aria-label="Tip cont">
+<button type="button" id="tab-in" aria-pressed="true">Am cont</button>
+<button type="button" id="tab-up" aria-pressed="false">Cont nou</button>
+</div>
+
+<label class="f" id="name-row" hidden>Nume
+<span class="field"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><input type="text" name="nume" placeholder="Numele tău" autocomplete="name"></span>
+</label>
+<label class="f">Email
+<span class="field"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 8l9 6 9-6"/></svg><input type="email" name="email" placeholder="nume@exemplu.ro" required autocomplete="email"></span>
+</label>
+<label class="f">Parolă
+<span class="field"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input type="password" name="parola" id="pass" placeholder="Minim 6 caractere" required minlength="6" autocomplete="current-password">
+<button class="eye" type="button" id="eye" aria-label="Arată parola"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></span>
+</label>
+
+<div class="strength" id="strength" hidden aria-live="polite"><i></i><i></i><i></i><span id="strength-txt">Introdu o parolă</span></div>
+
+<div class="opts" id="opts-in">
+<label class="check"><input type="checkbox" name="retine"> Ține-mă minte</label>
+<a href="#" id="forgot">Ai uitat parola?</a>
+</div>
+<label class="check" id="terms-row" hidden><input type="checkbox" id="terms"> Sunt de acord cu folosirea înregistrărilor mele pentru analiză.</label>
+
+<div class="msg" id="msg" hidden></div>
+<button class="btn btn-main" type="submit" id="submit">Autentifică-te</button>
+<div class="switch" id="switch">Nu ai cont? <button type="button" id="to-up">Creează unul</button></div>
+</form>
+</div>
+</dialog>
+
+<script>
+// bare animate (decor)
+function bars(el, n, amp) {
+  for (let i = 0; i < n; i++) {
+    const b = document.createElement('i');
+    const h = 25 + Math.abs(Math.sin(i * 0.5) * amp) + (i % 5) * 4;
+    b.style.setProperty('--h', Math.round(h) + '%');
+    b.style.setProperty('--d', (i * 0.07).toFixed(2) + 's');
+    el.appendChild(b);
+  }
+}
+bars(document.getElementById('wave'), 48, 55);
+bars(document.getElementById('mini-wave'), 28, 50);
+
+const $ = (id) => document.getElementById(id);
+const dlg = $('login'), pass = $('pass');
+
+function mode(signup) {
+  $('tab-in').setAttribute('aria-pressed', String(!signup));
+  $('tab-up').setAttribute('aria-pressed', String(signup));
+  $('name-row').hidden = !signup;
+  $('terms-row').hidden = !signup;
+  $('strength').hidden = !signup;
+  $('opts-in').hidden = signup;
+  $('terms').required = signup;
+  document.querySelector('[name=nume]').required = signup;
+  pass.setAttribute('autocomplete', signup ? 'new-password' : 'current-password');
+  $('form-title').textContent = signup ? 'Creează cont' : 'Autentificare';
+  $('form-sub').textContent = signup ? 'Durează mai puțin de un minut.' : 'Introdu datele contului tău.';
+  $('side-title').textContent = signup ? 'Hai să începem' : 'Bine ai revenit';
+  $('side-text').textContent = signup
+    ? 'Creează-ți contul și încarcă prima prezentare ca să vezi ce poți îmbunătăți.'
+    : 'Continuă de unde ai rămas și vezi feedbackul la prezentările tale.';
+  $('submit').textContent = signup ? 'Creează cont' : 'Autentifică-te';
+  $('switch').innerHTML = signup
+    ? 'Ai deja cont? <button type="button" id="to-in">Autentifică-te</button>'
+    : 'Nu ai cont? <button type="button" id="to-up">Creează unul</button>';
+  $('msg').hidden = true;
+}
+function open(signup) { mode(signup); dlg.showModal(); }
+
+$('open-login').addEventListener('click', () => open(false));
+document.querySelectorAll('[data-open-login]').forEach((b) => b.addEventListener('click', () => open(b.textContent.includes('cont'))));
+$('tab-in').addEventListener('click', () => mode(false));
+$('tab-up').addEventListener('click', () => mode(true));
+$('switch').addEventListener('click', (e) => {
+  if (e.target.id === 'to-up') mode(true);
+  if (e.target.id === 'to-in') mode(false);
+});
+$('close').addEventListener('click', () => dlg.close());
+dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+$('forgot').addEventListener('click', (e) => { e.preventDefault(); showMsg('Resetarea parolei se conectează într-un pas următor.', false); });
+
+$('eye').addEventListener('click', () => {
+  const show = pass.type === 'password';
+  pass.type = show ? 'text' : 'password';
+  $('eye').setAttribute('aria-label', show ? 'Ascunde parola' : 'Arată parola');
+});
+
+pass.addEventListener('input', () => {
+  const v = pass.value;
+  let s = 0;
+  if (v.length >= 6) s++;
+  if (v.length >= 10 || (/[a-z]/.test(v) && /[A-Z]/.test(v))) s++;
+  if (/\d/.test(v) && /[^A-Za-z0-9]/.test(v)) s++;
+  if (!v) s = 0;
+  document.querySelectorAll('#strength i').forEach((el, i) => el.classList.toggle('on', i < s));
+  $('strength-txt').textContent = ['Introdu o parolă', 'Slabă', 'Medie', 'Puternică'][s];
+});
+
+// ---- comunicarea cu serverul ----
+function showMsg(text, isError) {
+  const m = $('msg');
+  m.textContent = text;
+  m.classList.toggle('err', !!isError);
+  m.hidden = !text;
+}
+
+async function api(path, method, body) {
+  let res;
+  try {
+    res = await fetch(path, {
+      method: method,
+      credentials: 'same-origin',
+      headers: body ? { 'Content-Type': 'application/json' } : undefined,
+      body: body ? JSON.stringify(body) : undefined
+    });
+  } catch (e) {
+    throw new Error('Nu mă pot conecta la server. Pornește-l cu „python server.py”.');
+  }
+  if (res.status === 404 || res.status === 405) {
+    throw new Error('Deschide pagina de la http://localhost:8000 (după ce pornești „python server.py”).');
+  }
+  let data = {};
+  try { data = await res.json(); } catch (e) {}
+  if (!res.ok) throw new Error(typeof data.detail === 'string' ? data.detail : 'Date invalide. Verifică câmpurile.');
+  return data;
+}
+
+function setUser(user) {
+  document.body.classList.toggle('in', !!user);
+  if (user) {
+    $('user-name').textContent = user.name;
+    $('avatar').textContent = user.name.trim().charAt(0);
+  }
+}
+
+$('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = e.target;
+  const signup = $('tab-up').getAttribute('aria-pressed') === 'true';
+  const body = { email: f.elements.email.value.trim(), password: pass.value };
+  if (signup) body.name = f.elements.nume.value.trim();
+  $('submit').disabled = true;
+  showMsg('', false);
+  try {
+    const data = await api(signup ? '/api/register' : '/api/login', 'POST', body);
+    setUser(data.user);
+    f.reset();
+    pass.dispatchEvent(new Event('input'));
+    dlg.close();
+  } catch (err) {
+    showMsg(err.message, true);
+  } finally {
+    $('submit').disabled = false;
+  }
+});
+
+$('logout').addEventListener('click', async () => {
+  try { await api('/api/logout', 'POST', {}); } catch (e) {}
+  setUser(null);
+});
+
+// la încărcarea paginii: dacă există o sesiune, te recunoaște
+api('/api/me', 'GET').then((d) => setUser(d.user)).catch(() => {});
+</script>
+</body>
+</html>
