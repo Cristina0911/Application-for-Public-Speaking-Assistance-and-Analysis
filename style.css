@@ -344,3 +344,56 @@ dialog{max-height:calc(100dvh - 24px)}
   .chart{grid-template-columns:34px 1fr}
   .chart-bars{gap:3px}
 }
+
+.rep-sec .tiles{margin-top:16px}
+.chart-title{margin:28px 0 0;font-weight:600}
+
+/* exersare live */
+.live-open{margin-top:20px}
+.live-back{margin-bottom:12px}
+.live-stage{position:relative;border-radius:24px;overflow:hidden;background:#0a0720;border:1px solid var(--glass-line);aspect-ratio:16/9}
+.live-stage video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);display:block}
+.live-status{position:absolute;left:14px;bottom:14px;padding:6px 14px;border-radius:999px;background:rgba(14,10,36,.75);border:1px solid var(--glass-line);font-size:14px;font-weight:600}
+.live-status.ok{border-color:#5be0a0}
+.live-status.warn{border-color:#ffb454;background:rgba(80,50,0,.8)}
+.live-rec{position:absolute;right:14px;top:14px;display:flex;gap:8px;align-items:center;padding:6px 12px;border-radius:999px;background:rgba(14,10,36,.75);font-weight:700;font-size:14px}
+.live-rec i{width:10px;height:10px;border-radius:50%;background:#ff4d6d;animation:blink 1.2s ease-in-out infinite}
+@keyframes blink{50%{opacity:.3}}
+.live-tip{position:absolute;left:14px;right:14px;top:14px;display:flex;flex-direction:column;gap:2px;padding:14px 18px;border-radius:18px;background:rgba(255,180,84,.95);color:#2b1a00;font-size:16px;max-width:520px}
+.live-tip[hidden]{display:none}
+.live-actions{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
+.live-summary{margin-top:24px;max-width:760px;background:var(--glass);border:1px solid var(--glass-line);border-radius:20px;padding:20px 24px}
+.live-summary h3{margin:0 0 10px}
+.sum-row{display:flex;justify-content:space-between;gap:16px;padding:6px 0;border-bottom:1px solid var(--glass-line)}
+.sum-note{margin:12px 0 0;color:var(--muted)}
+.live-h{margin:32px 0 8px}
+.live-log{list-style:none;padding:0;margin:0;max-width:760px;display:flex;flex-direction:column;gap:6px}
+.live-log li{padding:10px 14px;border-radius:12px;background:var(--glass);border:1px solid var(--glass-line)}
+.live-log b{color:var(--cyan);margin-right:6px}
+
+.live-setup{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;margin:24px 0 8px;max-width:1100px}
+.live-setup label.f{min-width:220px}
+.live-pdf{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.live-pdf label.btn{cursor:pointer}
+.live-pdf:focus-within label.btn{box-shadow:0 0 0 3px rgba(111,227,255,.25)}
+.live-grid{display:grid;grid-template-columns:minmax(0,760px);gap:20px;margin-top:16px;max-width:1100px}
+.live-grid.has-slides{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}
+.live-slidebox{background:var(--glass);border:1px solid var(--glass-line);border-radius:24px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.live-slidebox canvas{display:block;border-radius:12px;background:#fff;max-width:100%}
+.live-slidebar{display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:700}
+.live-slidebar .btn:disabled{opacity:.4;cursor:default}
+#live-slide-title{color:#fff;font-weight:600;font-size:16px}
+.live-heard{min-height:24px;margin:8px 4px 0;color:var(--muted);font-size:14px;font-style:italic}
+.live-coach{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:30;width:min(1180px,calc(100% - 24px));max-height:52vh;overflow:auto;
+  padding:18px 22px;border-radius:24px;background:rgba(24,14,58,.96);border:2px solid rgba(255,180,84,.85);box-shadow:0 20px 70px rgba(0,0,0,.65)}
+.live-coach[hidden]{display:none}
+.coach-x{position:absolute;top:8px;right:10px;width:44px;height:44px;border-radius:50%;border:1px solid var(--glass-line);background:var(--glass);color:#fff;font-size:26px;line-height:1;cursor:pointer}
+.coach{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;padding-right:44px;font-size:clamp(19px,2.1vw,28px);line-height:1.35}
+.coach-sec{background:rgba(14,10,36,.45);border-radius:16px;padding:14px 16px}
+.coach-sec h4{margin:0 0 6px;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:#FFD9A0}
+.coach-sec p{margin:0}
+.coach-sec ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.coach-sec.relax{border:1px solid rgba(94,230,168,.4)}
+@media (max-width:860px){.live-grid.has-slides{grid-template-columns:minmax(0,1fr)}}
+
+#live-grid{scroll-margin-top:96px}

@@ -239,8 +239,9 @@
       err.hidden = q.status !== 'error' || !q.error;
       if (q.status === 'error') err.textContent = q.error || '';
       report.hidden = q.status !== 'done';
-      analyze.hidden = !(q.status === 'uploaded' || q.status === 'error');
-      analyze.textContent = q.status === 'error' ? 'Încearcă din nou' : 'Analizează';
+      analyze.hidden = !(q.status === 'uploaded' || q.status === 'error' || q.status === 'done');
+      analyze.textContent = q.status === 'error' ? 'Încearcă din nou' : q.status === 'done' ? 'Analizează din nou' : 'Analizează';
+      analyze.className = q.status === 'done' ? 'btn btn-ghost sm' : 'btn btn-main sm';
     }
     update(p);
     return { el: card, update };
@@ -299,36 +300,55 @@
     return t;
   }
 
-  function paceChart(windows) {
+  function barChart(items, o) {
     const wrap = el('div', 'chart');
-    const maxV = Math.max(200, Math.ceil(Math.max(...windows.map((w) => w.wpm)) / 20) * 20);
     const y = el('div', 'chart-y');
-    [maxV, Math.round(maxV / 2), 0].forEach((v) => y.appendChild(el('span', '', String(v))));
+    [o.max, Math.round(o.max / 2), 0].forEach((v) => y.appendChild(el('span', '', String(v))));
     const plot = el('div', 'chart-plot');
     plot.setAttribute('role', 'img');
-    plot.setAttribute('aria-label', 'Ritmul de vorbire, în cuvinte pe minut, pentru fiecare interval de 30 de secunde');
-    const band = el('div', 'chart-band');
-    band.style.bottom = (120 / maxV) * 100 + '%';
-    band.style.height = (40 / maxV) * 100 + '%';
-    band.appendChild(el('span', '', '120–160'));
-    plot.appendChild(band);
+    plot.setAttribute('aria-label', o.aria);
+    if (o.band) {
+      const band = el('div', 'chart-band');
+      band.style.bottom = (o.band[0] / o.max) * 100 + '%';
+      band.style.height = ((o.band[1] - o.band[0]) / o.max) * 100 + '%';
+      band.appendChild(el('span', '', o.band[0] + '–' + o.band[1]));
+      plot.appendChild(band);
+    }
     const bars = el('div', 'chart-bars');
-    const step = Math.ceil(windows.length / 10);
-    windows.forEach((w, i) => {
+    const step = Math.ceil(items.length / 10);
+    items.forEach((it, i) => {
       const col = el('div', 'chart-col');
       const bar = el('div', 'pbar');
-      bar.style.height = (w.wpm / maxV) * 100 + '%';
+      bar.style.height = (it.v / o.max) * 100 + '%';
       bar.tabIndex = 0;
-      bar.dataset.v = w.wpm + ' cuv/min';
-      bar.setAttribute('aria-label', 'De la ' + mmss(w.t) + ': ' + w.wpm + ' cuvinte pe minut');
+      bar.dataset.v = it.v + ' ' + o.unit;
+      bar.setAttribute('aria-label', 'De la ' + mmss(it.t) + ': ' + it.v + ' ' + o.unit);
       col.appendChild(bar);
-      col.appendChild(el('span', 'chart-x', i % step === 0 ? mmss(w.t) : ''));
+      col.appendChild(el('span', 'chart-x', i % step === 0 ? mmss(it.t) : ''));
       bars.appendChild(col);
     });
     plot.appendChild(bars);
     wrap.appendChild(y);
     wrap.appendChild(plot);
     return wrap;
+  }
+
+  function valuesTable(items, col2) {
+    const det = el('details', 'rep-table');
+    det.appendChild(el('summary', '', 'Vezi valorile într-un tabel'));
+    const tb = el('table');
+    const hr = el('tr');
+    hr.appendChild(el('th', '', 'De la'));
+    hr.appendChild(el('th', '', col2));
+    tb.appendChild(hr);
+    items.forEach((it) => {
+      const r = el('tr');
+      r.appendChild(el('td', '', mmss(it.t)));
+      r.appendChild(el('td', '', String(it.v)));
+      tb.appendChild(r);
+    });
+    det.appendChild(tb);
+    return det;
   }
 
   function section(title, sub) {
@@ -375,29 +395,19 @@
     // ritm
     const pace = section('Ritmul vorbirii', 'Cuvinte pe minut, la fiecare 30 de secunde. Banda colorată arată ritmul recomandat (120–160).');
     if (R.windows.length) {
-      pace.appendChild(paceChart(R.windows));
-      const det = el('details', 'rep-table');
-      det.appendChild(el('summary', '', 'Vezi valorile într-un tabel'));
-      const tb = el('table');
-      const hr = el('tr');
-      hr.appendChild(el('th', '', 'De la'));
-      hr.appendChild(el('th', '', 'Cuvinte pe minut'));
-      tb.appendChild(hr);
-      R.windows.forEach((w) => {
-        const r = el('tr');
-        r.appendChild(el('td', '', mmss(w.t)));
-        r.appendChild(el('td', '', String(w.wpm)));
-        tb.appendChild(r);
-      });
-      det.appendChild(tb);
-      pace.appendChild(det);
+      const items = R.windows.map((w) => ({ t: w.t, v: w.wpm }));
+      const max = Math.max(200, Math.ceil(Math.max(...items.map((i) => i.v)) / 20) * 20);
+      pace.appendChild(barChart(items, { max, band: [120, 160], unit: 'cuv/min', aria: 'Ritmul de vorbire, în cuvinte pe minut, pentru fiecare interval de 30 de secunde' }));
+      pace.appendChild(valuesTable(items, 'Cuvinte pe minut'));
     } else {
       pace.appendChild(el('p', 'rep-sub', 'Înregistrarea e prea scurtă pentru un grafic (sub 10 secunde de vorbire).'));
     }
     box.appendChild(pace);
 
+    box.appendChild(videoSection(R.video));
+
     // sfaturi
-    const tips = section('Sfaturi');
+    const tips = section('Sfaturi pentru vorbire');
     R.feedback.forEach((f) => tips.appendChild(feedbackItem(f)));
     box.appendChild(tips);
 
@@ -431,6 +441,39 @@
     });
     tr.appendChild(body);
     box.appendChild(tr);
+  }
+
+  function videoSection(V) {
+    const s = section('Limbajul corpului (din video)', 'Analizat din cadre luate de câteva ori pe secundă. Sunt aproximări, nu măsurători exacte.');
+    if (!V) {
+      s.appendChild(el('p', 'rep-note', 'Prezentarea a fost analizată înainte de adăugarea analizei video. Apasă „Analizează din nou” în lista de prezentări.'));
+      return s;
+    }
+    if (!V.available) {
+      const why = V.reason === 'audio'
+        ? 'Ai încărcat o înregistrare audio, deci nu pot analiza fața și gesturile. Încarcă un video ca să le primești.'
+        : V.error || 'Analiza video nu este disponibilă pentru această prezentare.';
+      s.appendChild(el('p', 'rep-note', why));
+      return s;
+    }
+    const lv = {};
+    V.feedback.forEach((f) => { lv[f.key] = f.level; });
+    const tiles = el('div', 'tiles');
+    tiles.appendChild(tile('Față în cadru', V.face_pct + '%', '', 'din timpul înregistrării', lv.face));
+    tiles.appendChild(tile('Contact vizual', V.eye_pct + '%', '', 'privești spre cameră', lv.eye));
+    tiles.appendChild(tile('Zâmbet', V.smile_pct + '%', '', 'din timpul cu fața vizibilă', lv.smile));
+    tiles.appendChild(tile('Mâini vizibile', V.hands_pct + '%', '', 'din timpul înregistrării'));
+    tiles.appendChild(tile('Gesturi active', V.gesture_pct + '%', '', 'mâinile se mișcă', lv.gesture));
+    tiles.appendChild(tile('Priviri lungi în jos', String(V.down_count), '', 'în total ' + Math.round(V.down_total) + ' s', lv.down));
+    s.appendChild(tiles);
+    if (V.eye_timeline.length) {
+      const items = V.eye_timeline.map((w) => ({ t: w.t, v: w.pct }));
+      s.appendChild(el('p', 'rep-sub chart-title', 'Contact vizual la fiecare 30 de secunde (% din timp)'));
+      s.appendChild(barChart(items, { max: 100, unit: '%', aria: 'Procentul de timp în care privești spre cameră, pentru fiecare interval de 30 de secunde' }));
+      s.appendChild(valuesTable(items, 'Contact vizual (%)'));
+    }
+    V.feedback.forEach((f) => s.appendChild(feedbackItem(f)));
+    return s;
   }
 
   function feedbackItem(f) {

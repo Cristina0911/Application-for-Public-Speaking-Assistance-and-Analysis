@@ -90,6 +90,7 @@
 <div class="eyebrow">Spațiul tău</div>
 <h2>Salut, <span id="app-name"></span>! Încarcă o prezentare</h2>
 <p>Alege slide-urile și înregistrarea, salvează-le, apoi apasă „Analizează” ca să primești raportul.</p>
+<button class="btn btn-ghost live-open" type="button" id="live-open">Exersează live cu camera</button>
 </div>
 
 <form class="up" id="up-form">
@@ -143,6 +144,61 @@
 </div>
 <p class="empty" id="pres-empty">Nu ai încărcat nicio prezentare încă.</p>
 <div class="pres-list" id="pres-list"></div>
+</div>
+<div id="live" hidden>
+<button class="clear live-back" type="button" id="live-back">← Înapoi</button>
+<div class="head">
+<div class="eyebrow">Exersare live</div>
+<h2>Prezintă, iar eu te urmăresc și te ajut</h2>
+<p>Încarcă slide-urile (PDF), pornește camera și vorbește. Ascult ce spui ca să știu la ce slide ești. Când strângi pumnul, îți spun unde ești, ce poți spune mai departe și cum să te relaxezi. Imaginea de la cameră rămâne pe calculatorul tău; pentru transcrierea vocii, Chrome trimite sunetul la serviciul lui de recunoaștere vocală.</p>
+</div>
+
+<div class="live-setup">
+<label class="f">Limba în care vorbești
+<span class="field plain"><select id="live-lang"><option value="ro">Română</option><option value="en">English</option></select></span>
+</label>
+<div class="live-pdf">
+<label class="btn btn-ghost" for="live-pdf">Alege PDF-ul cu slide-urile</label>
+<input class="sr" type="file" id="live-pdf" accept=".pdf,application/pdf">
+<span class="hint" id="live-pdf-info">Opțional: fără PDF merge doar urmărirea gesturilor.</span>
+<button class="clear" type="button" id="live-pdf-clear" hidden>Scoate PDF-ul</button>
+</div>
+</div>
+
+<div class="live-grid" id="live-grid">
+<div class="live-slidebox" id="live-slidebox" hidden>
+<canvas id="live-slide" aria-label="Slide-ul curent"></canvas>
+<div class="live-slidebar">
+<button class="btn btn-ghost sm" type="button" id="live-prev" aria-label="Slide-ul anterior">←</button>
+<span id="live-slide-n">Slide 1 / 1</span>
+<button class="btn btn-ghost sm" type="button" id="live-next" aria-label="Slide-ul următor">→</button>
+</div>
+<p class="hint" id="live-slide-title"></p>
+<p class="hint">Urmăresc ce spui și schimb slide-ul singură. Îl poți schimba și tu cu săgețile ← →.</p>
+</div>
+<div class="live-cam">
+<div class="live-stage">
+<video id="live-video" playsinline muted></video>
+<div class="live-rec" id="live-rec" hidden><i></i><span id="live-time">0:00</span></div>
+<div class="live-status" id="live-status">Camera e oprită</div>
+<div class="live-tip" id="live-tip" role="status" aria-live="polite" hidden></div>
+</div>
+<p class="live-heard" id="live-heard" aria-live="off"></p>
+</div>
+</div>
+
+<div class="msg" id="live-msg" hidden></div>
+<div class="live-actions">
+<button class="btn btn-main" type="button" id="live-start">Pornește camera</button>
+<button class="btn btn-ghost" type="button" id="live-help" hidden>Cere ajutor acum</button>
+<button class="btn btn-ghost" type="button" id="live-stop" hidden>Oprește</button>
+</div>
+
+<div class="live-coach" id="live-coach" role="status" aria-live="polite" hidden></div>
+<div class="live-summary" id="live-summary" hidden></div>
+<h3 class="live-h">Momente observate</h3>
+<p class="empty" id="live-log-empty">Încă nimic. Sugestiile apar aici pe parcurs.</p>
+<ul class="live-log" id="live-log"></ul>
 </div>
 <div id="report" hidden></div>
 </div>
@@ -210,6 +266,7 @@
 </dialog>
 
 <script src="app.js"></script>
+<script src="live.js"></script>
 <script>
 // bare animate (decor)
 function bars(el, n, amp) {

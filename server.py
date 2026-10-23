@@ -23,6 +23,7 @@ from fastapi.responses import FileResponse, RedirectResponse
 from pydantic import BaseModel, Field
 
 import analysis
+import analysis_video
 
 BASE = Path(__file__).parent
 DB_PATH = BASE / "speakcoach.db"
@@ -40,6 +41,7 @@ GOOGLE_ENABLED = GOOGLE_CLIENT_ID.endswith(".apps.googleusercontent.com") and no
 UPLOAD_DIR = BASE / "uploads"
 MAX_SLIDES = 50 * 1024 * 1024
 MAX_RECORDING = 500 * 1024 * 1024
+VIDEO_EXT = {".mp4", ".mov", ".webm", ".mkv", ".avi"}
 SLIDE_EXT = {".pptx", ".ppt", ".pdf", ".docx", ".doc", ".txt", ".odp"}
 REC_TYPES = {
     ".mp4": "video/mp4", ".mov": "video/quicktime", ".webm": "video/webm",
@@ -318,6 +320,12 @@ def friendly_error(e: Exception) -> str:
     return "Analiza nu a reușit: " + (str(e)[:200] or e.__class__.__name__)
 
 
+def video_error(e: Exception) -> str:
+    if isinstance(e, ImportError):
+        return "Lipsește biblioteca MediaPipe. Rulează „python -m pip install -r requirements.txt” și repornește serverul."
+    return "Analiza video nu a reușit: " + (str(e)[:250] or e.__class__.__name__)
+
+
 def run_analysis(pid: int):
     with conn() as c:
         row = c.execute("SELECT * FROM presentations WHERE id = ?", (pid,)).fetchone()
@@ -329,10 +337,23 @@ def run_analysis(pid: int):
         path = UPLOAD_DIR / str(row["user_id"]) / row["rec_file"]
         if not path.exists():
             raise FileNotFoundError(path)
+        has_video = path.suffix.lower() in VIDEO_EXT
+        scale = 0.75 if has_video else 1.0  # transcrierea = 75% din progres dacă urmează și analiza video
         words, segs, lang, duration = analysis.transcribe(
-            path, row["language"], lambda p: PROGRESS.__setitem__(pid, p)
+            path, row["language"], lambda p: PROGRESS.__setitem__(pid, p * scale)
         )
         result = analysis.compute(words, segs, lang, duration)
+        if has_video:
+            PROGRESS[pid] = 0.75
+            try:  # dacă analiza video eșuează, raportul de vorbire rămâne valabil
+                result["video"] = analysis_video.analyze(
+                    path, lambda p: PROGRESS.__setitem__(pid, 0.75 + p * 0.25)
+                )
+            except Exception as e:
+                print("Eroare la analiza video:", repr(e))
+                result["video"] = {"available": False, "error": video_error(e)}
+        else:
+            result["video"] = {"available": False, "reason": "audio"}
         set_status(pid, "done", None, result)
     except Exception as e:  # orice eroare ajunge ca mesaj în pagină, nu doar în terminal
         print("Eroare la analiză:", repr(e))
@@ -504,6 +525,11 @@ def index():
 @app.get("/app.js")
 def app_js():
     return FileResponse(BASE / "app.js")
+
+
+@app.get("/live.js")
+def live_js():
+    return FileResponse(BASE / "live.js")
 
 
 @app.get("/style.css")
