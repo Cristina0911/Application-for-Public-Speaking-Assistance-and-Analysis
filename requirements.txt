@@ -1,4 +1,7 @@
-fastapi
-uvicorn
-google-auth
-requests
+   fastapi
+   uvicorn
+   google-auth
+   requests
+   python-multipart
+   faster-whisper
+   av>=13,<19

@@ -28,6 +28,7 @@
 </header>
 
 <main>
+<div id="landing">
 <div class="wrap">
 <div class="hero">
 <div class="pill">Asistent pentru prezentări orale</div>
@@ -80,6 +81,72 @@
 <button class="btn btn-main" type="button" data-open-login>Creează cont</button>
 </div>
 </div>
+</div>
+
+<section id="app" class="app">
+<div class="wrap">
+<div id="app-main">
+<div class="head">
+<div class="eyebrow">Spațiul tău</div>
+<h2>Salut, <span id="app-name"></span>! Încarcă o prezentare</h2>
+<p>Alege slide-urile și înregistrarea, salvează-le, apoi apasă „Analizează” ca să primești raportul.</p>
+</div>
+
+<form class="up" id="up-form">
+<div class="up-grid">
+<div class="up-card">
+<div class="up-n">1</div>
+<h3>Slide-urile</h3>
+<p class="hint">PowerPoint, PDF, Word sau text · maxim 50 MB</p>
+<label class="drop" id="drop-slides" for="in-slides">
+<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>
+<span class="drop-t">Alege fișierul sau trage-l aici</span>
+<span class="drop-s" id="slides-info"></span>
+</label>
+<input class="sr" type="file" id="in-slides" accept=".pptx,.ppt,.pdf,.docx,.doc,.txt,.odp">
+<button class="clear" type="button" id="slides-clear" hidden>Alege alt fișier</button>
+</div>
+
+<div class="up-card">
+<div class="up-n">2</div>
+<h3>Înregistrarea</h3>
+<p class="hint">Video sau audio (mp4, mov, webm, mp3, wav, m4a…) · maxim 500 MB</p>
+<label class="drop" id="drop-rec" for="in-rec">
+<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>
+<span class="drop-t">Alege fișierul sau trage-l aici</span>
+<span class="drop-s" id="rec-info"></span>
+</label>
+<input class="sr" type="file" id="in-rec" accept=".mp4,.mov,.webm,.mkv,.avi,.mp3,.wav,.m4a,.ogg,video/*,audio/*">
+<div class="rec-preview" id="rec-preview"></div>
+<button class="clear" type="button" id="rec-clear" hidden>Alege alt fișier</button>
+</div>
+</div>
+
+<div class="up-opts">
+<label class="f">Limba în care vorbești
+<span class="field plain"><select id="up-lang"><option value="ro">Română</option><option value="en">English</option><option value="auto">Detectează automat</option></select></span>
+</label>
+<label class="f">Titlul prezentării (opțional)
+<span class="field plain"><input type="text" id="up-title" maxlength="120" placeholder="Ex: Prezentare licență"></span>
+</label>
+</div>
+
+<div class="up-progress" id="up-progress" hidden aria-live="polite">
+<div class="track"><i id="up-bar"></i></div><span id="up-pct">0%</span>
+</div>
+<div class="msg" id="up-msg" hidden></div>
+<button class="btn btn-main up-submit" type="submit" id="up-submit" disabled>Salvează prezentarea</button>
+</form>
+
+<div class="head list-head">
+<h2>Prezentările mele</h2>
+</div>
+<p class="empty" id="pres-empty">Nu ai încărcat nicio prezentare încă.</p>
+<div class="pres-list" id="pres-list"></div>
+</div>
+<div id="report" hidden></div>
+</div>
+</section>
 </main>
 
 <footer>
@@ -142,6 +209,7 @@
 </div>
 </dialog>
 
+<script src="app.js"></script>
 <script>
 // bare animate (decor)
 function bars(el, n, amp) {
@@ -247,6 +315,7 @@ function setUser(user) {
     $('user-name').textContent = user.name;
     $('avatar').textContent = user.name.trim().charAt(0);
   }
+  if (window.onUser) window.onUser(user);
 }
 
 $('login-form').addEventListener('submit', async (e) => {
