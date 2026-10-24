@@ -6,3 +6,4 @@ python-multipart
 faster-whisper
 av>=13,<19
 mediapipe
+pypdf

@@ -2,3 +2,4 @@ speakcoach.db
 __pycache__/
 uploads/
 models/
+groq_key.txt

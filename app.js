@@ -405,6 +405,7 @@
     box.appendChild(pace);
 
     box.appendChild(videoSection(R.video));
+    box.appendChild(slidesSection(R.slides));
 
     // sfaturi
     const tips = section('Sfaturi pentru vorbire');
@@ -473,6 +474,71 @@
       s.appendChild(valuesTable(items, 'Contact vizual (%)'));
     }
     V.feedback.forEach((f) => s.appendChild(feedbackItem(f)));
+    return s;
+  }
+
+  function slidesSection(S) {
+    const s = section('Comparație cu slide-urile', 'Ghicit din cuvintele pe care le-ai spus. Este o potrivire de cuvinte, nu o înțelegere a sensului, deci poate greși când explici ideile cu alte cuvinte.');
+    if (!S) {
+      s.appendChild(el('p', 'rep-note', 'Prezentarea a fost analizată înainte de adăugarea comparației cu slide-urile. Apasă „Analizează din nou” în lista de prezentări.'));
+      return s;
+    }
+    if (!S.available) {
+      s.appendChild(el('p', 'rep-note', S.error || 'Comparația cu slide-urile nu este disponibilă pentru această prezentare.'));
+      return s;
+    }
+    const lv = {};
+    S.feedback.forEach((f) => { lv[f.key] = f.level; });
+    const tiles = el('div', 'tiles');
+    if (S.overall_coverage !== null) tiles.appendChild(tile('Puncte acoperite', S.overall_coverage + '%', '', 'din ce scrie pe slide-uri', lv.cov));
+    tiles.appendChild(tile('Slide-uri parcurse', S.visited + ' / ' + S.count, '', S.skipped.length ? 'sărite: ' + S.skipped.join(', ') : 'toate au fost atinse', lv.skip));
+    tiles.appendChild(tile('Întoarceri înapoi', String(S.backtracks), '', 'la slide-uri deja prezentate', lv.order));
+    s.appendChild(tiles);
+
+    // traseul în timp
+    s.appendChild(el('p', 'rep-sub chart-title', 'La ce slide erai pe parcursul înregistrării'));
+    const total = S.timeline.length ? S.timeline[S.timeline.length - 1].end - S.timeline[0].start : 1;
+    const bar = el('div', 'slidebar');
+    bar.setAttribute('role', 'img');
+    bar.setAttribute('aria-label', 'Traseul prin slide-uri: ' + S.timeline.map((t) => 'slide ' + t.slide + ' de la ' + mmss(t.start)).join(', '));
+    S.timeline.forEach((t) => {
+      const seg = el('span', 'seg', 'Slide ' + t.slide);
+      seg.style.flexGrow = String(Math.max(0.5, t.end - t.start));
+      seg.style.setProperty('--h', String((t.slide * 47) % 360));
+      seg.title = 'Slide ' + t.slide + ' · ' + mmss(t.start) + '–' + mmss(t.end);
+      bar.appendChild(seg);
+    });
+    s.appendChild(bar);
+    s.appendChild(el('p', 'rep-sub', 'Durata totală: ' + mmss(total)));
+
+    // pe fiecare slide
+    const list = el('div', 'slide-list');
+    S.items.forEach((it) => {
+      const d = el('details', 'slide-item' + (it.time <= 0 ? ' skipped' : ''));
+      const sm = el('summary');
+      sm.appendChild(el('span', 'sl-n', String(it.n)));
+      sm.appendChild(el('span', 'sl-t', it.title || '(fără titlu)'));
+      const meta = it.time <= 0 ? 'neabordat' : mmss(it.time) + ' · ' + it.share + '%' + (it.coverage !== null ? ' · acoperit ' + it.coverage + '%' : '');
+      sm.appendChild(el('span', 'sl-m', meta));
+      d.appendChild(sm);
+      if (it.points.length) {
+        const ul = el('ul', 'sl-pts');
+        it.points.forEach((p) => {
+          const li = el('li', p.covered ? 'ok' : 'miss');
+          li.appendChild(el('span', 'sl-mark', p.covered ? '✓' : '✗'));
+          li.appendChild(document.createTextNode(' ' + p.text));
+          li.appendChild(el('span', 'sr-only', p.covered ? ' (spus)' : ' (nespus)'));
+          ul.appendChild(li);
+        });
+        d.appendChild(ul);
+      } else {
+        d.appendChild(el('p', 'rep-sub', 'Slide-ul nu are puncte de text.'));
+      }
+      if (it.points.some((p) => !p.covered) && it.time > 0) d.open = true;
+      list.appendChild(d);
+    });
+    s.appendChild(list);
+    S.feedback.forEach((f) => s.appendChild(feedbackItem(f)));
     return s;
   }
 

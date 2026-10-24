@@ -150,7 +150,7 @@
 <div class="head">
 <div class="eyebrow">Exersare live</div>
 <h2>Prezintă, iar eu te urmăresc și te ajut</h2>
-<p>Încarcă slide-urile (PDF), pornește camera și vorbește. Ascult ce spui ca să știu la ce slide ești. Când strângi pumnul, îți spun unde ești, ce poți spune mai departe și cum să te relaxezi. Imaginea de la cameră rămâne pe calculatorul tău; pentru transcrierea vocii, Chrome trimite sunetul la serviciul lui de recunoaștere vocală.</p>
+<p>Încarcă slide-urile (PDF, PowerPoint sau Word), pornește camera și vorbește. Ascult ce spui ca să știu la ce slide ești. Când strângi pumnul, îți spun unde ești, ce poți spune mai departe și cum să te relaxezi. Imaginea de la cameră rămâne pe calculatorul tău; pentru transcrierea vocii, Chrome trimite sunetul la serviciul lui de recunoaștere vocală.</p>
 </div>
 
 <div class="live-setup">
@@ -158,16 +158,17 @@
 <span class="field plain"><select id="live-lang"><option value="ro">Română</option><option value="en">English</option></select></span>
 </label>
 <div class="live-pdf">
-<label class="btn btn-ghost" for="live-pdf">Alege PDF-ul cu slide-urile</label>
-<input class="sr" type="file" id="live-pdf" accept=".pdf,application/pdf">
-<span class="hint" id="live-pdf-info">Opțional: fără PDF merge doar urmărirea gesturilor.</span>
-<button class="clear" type="button" id="live-pdf-clear" hidden>Scoate PDF-ul</button>
+<label class="btn btn-ghost" for="live-pdf">Alege slide-urile</label>
+<input class="sr" type="file" id="live-pdf" accept=".pdf,.pptx,.ppt,.odp,.docx,.doc,.txt,.md,application/pdf">
+<span class="hint" id="live-pdf-info">Opțional · PDF, PowerPoint, Word, .odp sau .txt</span>
+<button class="clear" type="button" id="live-pdf-clear" hidden>Scoate slide-urile</button>
 </div>
 </div>
 
 <div class="live-grid" id="live-grid">
 <div class="live-slidebox" id="live-slidebox" hidden>
 <canvas id="live-slide" aria-label="Slide-ul curent"></canvas>
+<div class="live-textslide" id="live-textslide" hidden></div>
 <div class="live-slidebar">
 <button class="btn btn-ghost sm" type="button" id="live-prev" aria-label="Slide-ul anterior">←</button>
 <span id="live-slide-n">Slide 1 / 1</span>
@@ -187,10 +188,13 @@
 </div>
 </div>
 
+<p class="hint">Dacă proiectezi ecranul, apasă „Deschide consola privată”: sugestiile apar într-o fereastră separată pe care o muți pe ecranul laptopului, iar publicul vede doar slide-urile.</p>
+<p class="hint live-ai-note" id="live-ai-note" hidden>Sugestiile AI: cât timp asistentul e pornit, textul slide-ului curent și ce ai spus recent se trimit periodic la serviciul Groq, care formulează sfatul.</p>
 <div class="msg" id="live-msg" hidden></div>
 <div class="live-actions">
 <button class="btn btn-main" type="button" id="live-start">Pornește camera</button>
-<button class="btn btn-ghost" type="button" id="live-help" hidden>Cere ajutor acum</button>
+<button class="btn btn-ghost" type="button" id="live-private">Deschide consola privată</button>
+<button class="btn btn-ghost" type="button" id="live-help" hidden>Pornește asistentul</button>
 <button class="btn btn-ghost" type="button" id="live-stop" hidden>Oprește</button>
 </div>
 
@@ -306,10 +310,10 @@ function mode(signup) {
     : 'Nu ai cont? <button type="button" id="to-up">Creează unul</button>';
   $('msg').hidden = true;
 }
-function open(signup) { mode(signup); dlg.showModal(); renderGoogle(); }
+function openLogin(signup) { mode(signup); dlg.showModal(); renderGoogle(); }
 
-$('open-login').addEventListener('click', () => open(false));
-document.querySelectorAll('[data-open-login]').forEach((b) => b.addEventListener('click', () => open(b.textContent.includes('cont'))));
+$('open-login').addEventListener('click', () => openLogin(false));
+document.querySelectorAll('[data-open-login]').forEach((b) => b.addEventListener('click', () => openLogin(b.textContent.includes('cont'))));
 $('tab-in').addEventListener('click', () => mode(false));
 $('tab-up').addEventListener('click', () => mode(true));
 $('switch').addEventListener('click', (e) => {
@@ -440,7 +444,7 @@ initGoogle();
 // dacă Google te-a adus înapoi cu o eroare
 if (location.search.includes('google=eroare')) {
   history.replaceState(null, '', '/');
-  open(false);
+  openLogin(false);
   showMsg('Conectarea cu Google nu a reușit. Încearcă din nou.', true);
 }
 
